@@ -12,15 +12,11 @@ This repo contains the scripts to automate the whole process of sending personal
 
 * We use [pre-commit](https://pre-commit.com/) with black and ruff
 
-* The `credentials.json` from [gmail API](https://developers.google.com/gmail/api/guides). You need to authenticate
-just once. After that, the newly-created `token.json` will be used.
+* The `credentials.json` is taken from [gmail API](https://developers.google.com/gmail/api/guides).
+You need to authenticate just once. After that, the newly-created `token.json` will be used.
 
 * You need to create a .py file named `saved_tokens.py` that
 it should contain the username & password of the gmail account
-
-
-
-
 
 ## Contact
 
