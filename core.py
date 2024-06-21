@@ -16,6 +16,17 @@ from constants import SCOPES
 
 logger = logging.getLogger(__name__)
 
+# Create a separate email which logs the email that failed
+# There is not a sure way to catch an email that fails.
+# See https://stackoverflow.com/questions/53561296/python-correct-method-verify-if-email-exists
+# See: https://stackoverflow.com/a/13733863
+logger_email = logging.getLogger("logger_email")
+fh = logging.FileHandler("emails.log")
+fh.setLevel(logging.ERROR)
+logger_email.addHandler(fh)
+console_handler = logging.StreamHandler()
+logger_email.addHandler(console_handler)
+
 
 def parse_excel_file() -> pd.DataFrame:
     """
@@ -87,7 +98,8 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
                 <body>
                     <div align='center'>
                         <a href="{link}">
-                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;"><br/>   # noqa: E501
+                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                            <br/>
                         </a>
                     </div>
                     <h1 style="text-align: center;">
@@ -130,6 +142,7 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
             logger.info("Message sent successfully")
 
         except (HttpError, Exception) as err:
+            logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
 
 
@@ -142,7 +155,9 @@ def compare_emails() -> pd.DataFrame:
     excel_file["emails_bool"] = excel_file["emails"].isin(answers_file["emails"])
     # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
 
-    return pd.DataFrame(excel_file.loc[excel_file["emails_bool"] is False, ["emails", "links"]])
+    return pd.DataFrame(
+        excel_file.loc[excel_file["emails_bool"] is False, ["emails", "links"]]
+    )  # noqa
 
 
 def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
@@ -172,7 +187,8 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
                 <body>
                     <div align='center'>
                         <a href="{link}">
-                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;"><br/>  # noqa: E501
+                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                            <br/>
                         </a>
                     </div>
                     <h1 style="text-align: center;">
@@ -215,4 +231,5 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             logger.info("Message sent successfully")
 
         except (HttpError, Exception) as err:
+            logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
