@@ -1,0 +1,8 @@
+
+[tool.ruff]
+line-length = 100
+# fix-only = true
+ignore = ["E501"]
+
+[tool.black]
+line-length = 100
