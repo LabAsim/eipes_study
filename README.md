@@ -1,7 +1,7 @@
 # Μελέτη ΕΙΠΕς (EIPEs study)
 
 <a href="{link}">
-    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:700px;">
     <br/>
 </a>
 
