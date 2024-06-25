@@ -20,8 +20,7 @@ def main():
         level=logging.DEBUG,
         force=True,
         handlers=[console],
-    )  # Force is needed here to re config logging
-    # Init should be here so as the colors be rendered properly in fly.io
+    )
     colorama.init(convert=True)
     creds = authenticate()
     excel_file_emails = compare_emails()
