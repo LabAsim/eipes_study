@@ -52,6 +52,8 @@ def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
     If there is not, it writes one to disk.
     If there is, it compares `emails.xlsx` values to `emails_sent.xlsx`.
     If an email of `emails.xlsx` is not present in  `emails_sent.xlsx`, it will in the df returned
+
+    :return A dataframe contains the emails and their corresponding links
     """
 
     emails_sent_excel_path = os.path.join(os.path.dirname(__file__), "emails_sent.xlsx")
@@ -64,11 +66,14 @@ def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
         # Re-write the emails_sent file with the old + new emails
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
-        return pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails"]])  # noqa  # noqa  # noqa
+        df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails", "links"]])
+        logger.debug(f"{df_to_return.shape=}")
+
+        return df_to_return
     else:
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
-        return pd.DataFrame(df["emails"])
+        return pd.DataFrame(df[["emails", "links"]])
 
 
 def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
@@ -202,7 +207,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
     # create gmail api client
     service = build("gmail", "v1", credentials=creds)
     _input = input(
-        "\nAre you sure that you checked that these emails are the ones that didn't answer?\n"
+        "\nAre you sure that you checked that these emails are the ones that didn't answer and they are <=500?\n"
     )
     if _input not in ("yes", "Yes", "1", "y", "Y"):
         logger.error("Double check the emails!")

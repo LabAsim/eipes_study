@@ -30,6 +30,13 @@ def main():
     )
     colorama.init(convert=True)
     creds = authenticate()
+    # https://support.google.com/mail/answer/22839?hl=en#zippy=%2Cyou-have-reached-a-limit-for-sending-mail
+    # You may see this message if you email a total of more than 500 recipients in a single email
+    # and or more than 500 emails sent in a day.
+    _input = input("\nAre you sure that you checked that these emails are <=500?\n")
+    if _input not in ("yes", "Yes", "1", "y", "Y"):
+        logger.error("Double check the emails!")
+        return
     excel_file_emails = parse_excel_file()
     excel_file_emails = drop_email_duplicates(df=excel_file_emails)
     excel_file_emails = compare_save_emails_locally(df=excel_file_emails)

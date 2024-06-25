@@ -23,6 +23,9 @@ def main():
     )
     colorama.init(convert=True)
     creds = authenticate()
+    # https://support.google.com/mail/answer/22839?hl=en#zippy=%2Cyou-have-reached-a-limit-for-sending-mail
+    # You may see this message if you email a total of more than 500 recipients in a single email
+    # and or more than 500 emails sent in a day.
     excel_file_emails = compare_emails()
     it = iterate_pandas_rows(df=excel_file_emails)
     send_reminders(creds=creds, it=it, subject=SUBJECT_REMINDER_EMAIL)
