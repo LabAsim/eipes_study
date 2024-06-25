@@ -17,7 +17,7 @@ This repo contains the scripts to automate the whole process of sending personal
 You need to authenticate just once. After that, the newly-created `token.json` will be used.
 
 * You need to create a .py file named `saved_tokens.py` that
-it should contain the username & password of the gmail account
+it should contain the username (`GMAIL_USERNAME`) & password (`GMAIL_PASS`) of the gmail account
 
 ## Bioethics
 
