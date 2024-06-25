@@ -2,7 +2,13 @@ import logging
 
 import colorama
 
-from core import authenticate, send_emails, parse_excel_file, iterate_pandas_rows
+from core import (
+    authenticate,
+    send_emails,
+    parse_excel_file,
+    iterate_pandas_rows,
+    drop_email_duplicates,
+)
 from helper import color_logging
 from constants import SUBJECT_FIRST_EMAIL
 
@@ -23,9 +29,9 @@ def main():
     )  # Force is needed here to re config logging
     # Init should be here so as the colors be rendered properly in fly.io
     colorama.init(convert=True)
-
     creds = authenticate()
     excel_file_emails = parse_excel_file()
+    excel_file_emails = drop_email_duplicates(df=excel_file_emails)
     it = iterate_pandas_rows(df=excel_file_emails)
     send_emails(creds=creds, it=it, subject=SUBJECT_FIRST_EMAIL)
 

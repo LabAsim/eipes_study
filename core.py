@@ -41,6 +41,11 @@ def parse_excel_file() -> pd.DataFrame:
     return excel_file
 
 
+def drop_email_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    """Drops the duplicates from emails column and returns the df"""
+    return df.drop_duplicates(subset=["emails"])
+
+
 def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
     """
     itertuples() returns a NamedTuple
@@ -147,16 +152,20 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
 
 
 def compare_emails() -> pd.DataFrame:
-    """Extracts the emails and their corresponding links that point to people that have not answered in our survey"""
+    """
+    Extracts the emails and their corresponding links that point to people that have not answered in our survey
+    (If someone has answered successfully, then their email will appear in the `emails` column)
+    """
     excel_file = parse_excel_file()
+    excel_file = drop_email_duplicates(df=excel_file)
     answers_file = pd.read_excel(
         io="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx"
     )
     excel_file["emails_bool"] = excel_file["emails"].isin(answers_file["emails"])
     # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
 
-    return pd.DataFrame(
-        excel_file.loc[excel_file["emails_bool"] is False, ["emails", "links"]]
+    return pd.DataFrame(  # noqa
+        excel_file.loc[excel_file["emails_bool"] == False, ["emails", "links"]]  # noqa
     )  # noqa
 
 
