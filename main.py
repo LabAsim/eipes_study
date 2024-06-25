@@ -8,6 +8,7 @@ from core import (
     parse_excel_file,
     iterate_pandas_rows,
     drop_email_duplicates,
+    compare_save_emails_locally,
 )
 from helper import color_logging
 from constants import SUBJECT_FIRST_EMAIL
@@ -31,6 +32,7 @@ def main():
     creds = authenticate()
     excel_file_emails = parse_excel_file()
     excel_file_emails = drop_email_duplicates(df=excel_file_emails)
+    excel_file_emails = compare_save_emails_locally(df=excel_file_emails)
     it = iterate_pandas_rows(df=excel_file_emails)
     send_emails(creds=creds, it=it, subject=SUBJECT_FIRST_EMAIL)
 

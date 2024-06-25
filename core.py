@@ -11,6 +11,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.errors import HttpError
 import pandas as pd
 
+from helper import file_exists
 from saved_tokens import GMAIL_USERNAME
 from constants import SCOPES
 
@@ -44,6 +45,30 @@ def parse_excel_file() -> pd.DataFrame:
 def drop_email_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     """Drops the duplicates from emails column and returns the df"""
     return df.drop_duplicates(subset=["emails"])
+
+
+def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
+    """Checks if there is a file with the emails that we had sent the survey to.
+    If there is not, it writes one to disk.
+    If there is, it compares `emails.xlsx` values to `emails_sent.xlsx`.
+    If an email of `emails.xlsx` is not present in  `emails_sent.xlsx`, it will in the df returned
+    """
+
+    emails_sent_excel_path = os.path.join(os.path.dirname(__file__), "emails_sent.xlsx")
+
+    if file_exists(dir_path=os.path.dirname(__file__), name="emails_sent.xlsx"):
+        emails_sent = pd.read_excel(io=emails_sent_excel_path)
+
+        df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
+
+        # Re-write the emails_sent file with the old + new emails
+        df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
+
+        return pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails"]])  # noqa  # noqa  # noqa
+    else:
+        df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
+
+        return pd.DataFrame(df["emails"])
 
 
 def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
