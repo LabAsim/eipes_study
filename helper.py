@@ -1,5 +1,7 @@
 import copy
 import logging
+import os
+import pathlib
 
 import colorama
 
@@ -39,3 +41,12 @@ def color_logging(level: int) -> logging.StreamHandler:
     # tell the handler to use this format
     console.setFormatter(formatter)
     return console
+
+
+def file_exists(dir_path: str | os.PathLike, name: str) -> bool:
+    """Returns true if the path exists"""
+    path_to_name = pathlib.Path(os.path.join(dir_path, name))
+    if path_to_name.exists():
+        return True
+    else:
+        return False
