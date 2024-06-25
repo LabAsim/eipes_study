@@ -1,12 +1,13 @@
 # Μελέτη ΕΙΠΕς (EIPEs study)
 
-This repo contains the scripts to automate the whole process of sending personalized emails to the study participants
+This repo contains the scripts to automate the whole process of sending personalized emails to the study participants.
 
 
 ## Table of Contents
 
-*   [Requirements](#Requirements)
-*   [Contact](#Contact)
+* [Requirements](#Requirements)
+* [Bioethics](#Bioethics)
+* [Contact](#Contact)
 
 ## Requirements
 
@@ -17,6 +18,12 @@ You need to authenticate just once. After that, the newly-created `token.json` w
 
 * You need to create a .py file named `saved_tokens.py` that
 it should contain the username & password of the gmail account
+
+## Bioethics
+
+The study was approved by the board of ethics and the administration of Aiginiteion Hospital.
+You can find the approval [here](https://diavgeia.gov.gr/doc/%CE%A1%CE%9B%CE%92246%CE%A88%CE%9D2-4%CE%A4%CE%92).
+
 
 ## Contact
 
