@@ -1,7 +1,13 @@
 # Μελέτη ΕΙΠΕς (EIPEs study)
 
+<a href="{link}">
+    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+    <br/>
+</a>
+
 This repo contains the scripts to automate the whole process of sending personalized emails to the study participants.
 
+You can find the flyer of the study [here](https://github.com/LabAsim/eipes_study/blob/master/media/eipes.png?raw=true).
 
 ## Table of Contents
 
