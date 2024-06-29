@@ -9,7 +9,7 @@ saved_tokens.py
 token.json
 *.html
 media/eipes.png
-
+example*
 # IntelliJ project files
 .idea
 *.iml
