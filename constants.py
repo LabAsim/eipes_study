@@ -1,5 +1,6 @@
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly", "https://mail.google.com/"]
-SUBJECT_FIRST_EMAIL = (
+SUBJECT_FIRST_EMAIL = "Έρευνα για την εκπαίδευση των ιατρών"
+SUBJECT_FIRST_EMAIL2 = (
     "Έρευνα για την εκπαίδευση των ειδικευόμενων ιατρών στην Ελλάδα - Μελέτη ΕΙΠΕς"
 )
 SUBJECT_REMINDER_EMAIL = (
