@@ -112,6 +112,117 @@ def authenticate() -> Credentials:
     return creds
 
 
+def choose_random_content(link: str) -> str:
+    """Returns randomly one out of 3 templates"""
+    content = f"""
+    <html>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <style>
+        </style>
+        <body>
+            <div align='center'>
+                <a>
+                    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                    <br/>
+                </a>
+            </div>
+            <h1 style="text-align: center;">
+                Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
+            </h1>
+            <p style="font-size:18px">
+                Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+                να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+                για την κατάστασή τους
+                αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+            </p>
+            <p style="font-size:18px">
+                Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+            </p>
+            <p style="font-size:18px">
+                Χρόνος συμπλήρωσης: 5 λεπτά
+            </p>
+            <h2 style="text-align: center;">
+                Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
+            </h2>
+        </body>
+    </html>
+    """
+    content2 = f"""
+    <html>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <style>
+        </style>
+        <body>
+            <div align='center'>
+                <a>
+                    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                    <br/>
+                </a>
+            </div>
+            <h1 style="text-align: center;">
+                Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
+            </h1>
+        </body>
+    </html>
+
+    Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+    να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+    για την κατάστασή τους
+    αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+
+    <html>
+        <body>
+            <p style="font-size:18px">
+                Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+            </p>
+            <p style="font-size:18px">
+                Χρόνος συμπλήρωσης: 5 λεπτά
+            </p>
+            <h2 style="text-align: center;">
+                Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
+            </h2>
+        </body>
+    </html>
+    """
+
+    content3 = f"""
+    <html>
+        <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+        <style>
+        </style>
+        <body>
+            <div align='center'>
+                <a>
+                    <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                    <br/>
+                </a>
+            </div>
+            <h1 style="text-align: center;">
+                Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
+            </h1>
+        </body>
+    </html>
+
+    Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+    να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+    για την κατάστασή τους
+    αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+
+    <html>
+        <body>
+            <h2 style="text-align: center;">
+                Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
+            </h2>
+        </body>
+    </html>
+
+    Χρόνος συμπλήρωσης: 5 λεπτά. Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+    """
+    content = random.choice([content, content2, content3])
+
+    return content
+
+
 def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
     """
     Sends the emails
@@ -129,111 +240,7 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
             counter += 1
             # message.set_content(content)
             # https://stackoverflow.com/a/16906974
-            content = f"""
-            <html>
-                <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
-                <style>
-                </style>
-                <body>
-                    <div align='center'>
-                        <a>
-                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
-                            <br/>
-                        </a>
-                    </div>
-                    <h1 style="text-align: center;">
-                        Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
-                    </h1>
-                    <p style="font-size:18px">
-                        Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
-                        να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
-                        για την κατάστασή τους
-                        αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
-                    </p>
-                    <p style="font-size:18px">
-                        Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
-                    </p>
-                    <p style="font-size:18px">
-                        Χρόνος συμπλήρωσης: 5 λεπτά
-                    </p>
-                    <h2 style="text-align: center;">
-                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
-                    </h2>
-                </body>
-            </html>
-            """
-            content2 = f"""
-            <html>
-                <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
-                <style>
-                </style>
-                <body>
-                    <div align='center'>
-                        <a>
-                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
-                            <br/>
-                        </a>
-                    </div>
-                    <h1 style="text-align: center;">
-                        Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
-                    </h1>
-                </body>
-            </html>
-
-            Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
-            να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
-            για την κατάστασή τους
-            αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
-
-            <html>
-                <body>
-                    <p style="font-size:18px">
-                        Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
-                    </p>
-                    <p style="font-size:18px">
-                        Χρόνος συμπλήρωσης: 5 λεπτά
-                    </p>
-                    <h2 style="text-align: center;">
-                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
-                    </h2>
-                </body>
-            </html>
-            """
-
-            content3 = f"""
-            <html>
-                <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
-                <style>
-                </style>
-                <body>
-                    <div align='center'>
-                        <a>
-                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
-                            <br/>
-                        </a>
-                    </div>
-                    <h1 style="text-align: center;">
-                        Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
-                    </h1>
-                </body>
-            </html>
-
-            Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
-            να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
-            για την κατάστασή τους
-            αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
-
-            <html>
-                <body>
-                    <h2 style="text-align: center;">
-                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
-                    </h2>
-                </body>
-            </html>
-
-            Χρόνος συμπλήρωσης: 5 λεπτά. Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
-            """
-            content = random.choice([content, content2, content3])
+            content = choose_random_content(link=link)
             # Use this for html
             message.add_header("Content-Type", "text/html")
             message.set_payload(content)
