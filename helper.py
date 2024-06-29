@@ -4,6 +4,7 @@ import os
 import pathlib
 
 import colorama
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -50,3 +51,38 @@ def file_exists(dir_path: str | os.PathLike, name: str) -> bool:
         return True
     else:
         return False
+
+
+def sanitise_log_emails() -> pd.DataFrame:
+    """Sanitise the entries"""
+    df = pd.read_csv("emails.log", header=None)
+    df[0] = df[0].str.replace("_email=", "")
+
+    return df
+
+
+def remove_logged_emails_from_saved_xlsx() -> None:
+    """Removes any emails found in the emails.log from emails_sent.xlsx"""
+    df = pd.read_excel(io="emails_sent.xlsx")
+
+    to_compare = sanitise_log_emails()
+
+    df["bools"] = False
+
+    for ind, mail in pd.DataFrame(df["emails"]).itertuples():
+        # print(f"{ind=}:{mail}")
+
+        for sub_ind, sub_mail in to_compare.itertuples():
+            # print(sub_mail)
+            if str(mail) in sub_mail:
+                df.loc[ind, "bools"] = True
+
+    print(df.loc[df["bools"] is True].to_string())
+
+    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.query.html
+    df["emails"] = df.query("bools == False")["emails"]
+
+    print(df.tail())
+
+    # Drop NAs and save the Excel file
+    df.dropna().to_excel("emails_sent.xlsx", columns=["emails"], index=False)
