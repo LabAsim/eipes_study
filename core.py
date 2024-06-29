@@ -120,11 +120,13 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
 
     # create gmail api client
     service = build("gmail", "v1", credentials=creds)
-
+    counter = 1
     for _email, link in it:
         try:
             message = EmailMessage()  # policy=policy.EmailPolicy(cte_type="8bit", utf8=True)
             logger.debug(f"{_email=}")
+            logger.debug(f"{counter=}")
+            counter += 1
             # message.set_content(content)
             # https://stackoverflow.com/a/16906974
             content = f"""
@@ -296,10 +298,13 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
     if _input not in ("yes", "Yes", "1", "y", "Y"):
         logger.error("Double check the emails!")
         return
+    counter = 1
     for _email, link in it:
         try:
             message = EmailMessage()  # policy=policy.EmailPolicy(cte_type="8bit", utf8=True)
             logger.debug(f"{_email=}")
+            logger.debug(f"{counter=}")
+            counter += 1
             # message.set_content(content)
             # https://stackoverflow.com/a/16906974
             content = f"""
