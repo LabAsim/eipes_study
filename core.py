@@ -1,6 +1,8 @@
 import logging
 import os.path
 import base64
+import random
+import time
 from email.message import EmailMessage
 from typing import Iterator, NamedTuple, Any
 
@@ -66,7 +68,7 @@ def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
         # Re-write the emails_sent file with the old + new emails
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
-        df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails", "links"]])
+        df_to_return = pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails", "links"]])  # noqa
         logger.debug(f"{df_to_return.shape=}")
 
         return df_to_return
@@ -132,24 +134,104 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
                 </style>
                 <body>
                     <div align='center'>
-                        <a href="{link}">
+                        <a>
                             <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
                             <br/>
                         </a>
                     </div>
                     <h1 style="text-align: center;">
                         Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
-
                     </h1>
+                    <p style="font-size:18px">
+                        Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+                        να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+                        για την κατάστασή τους
+                        αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+                    </p>
+                    <p style="font-size:18px">
+                        Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+                    </p>
+                    <p style="font-size:18px">
+                        Χρόνος συμπλήρωσης: 5 λεπτά
+                    </p>
                     <h2 style="text-align: center;">
-                        Πατήστε στον <a href="{link}">σύνδεσμο</a> που ακολουθεί για να συμμετέχετε στην έρευνα.
+                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
                     </h2>
-                    <h3 style="text-align: center;">
-                        {link}
-                    </h3>
                 </body>
             </html>
             """
+            content2 = f"""
+            <html>
+                <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+                <style>
+                </style>
+                <body>
+                    <div align='center'>
+                        <a>
+                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                            <br/>
+                        </a>
+                    </div>
+                    <h1 style="text-align: center;">
+                        Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
+                    </h1>
+                </body>
+            </html>
+
+            Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+            να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+            για την κατάστασή τους
+            αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+
+            <html>
+                <body>
+                    <p style="font-size:18px">
+                        Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+                    </p>
+                    <p style="font-size:18px">
+                        Χρόνος συμπλήρωσης: 5 λεπτά
+                    </p>
+                    <h2 style="text-align: center;">
+                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
+                    </h2>
+                </body>
+            </html>
+            """
+
+            content3 = f"""
+            <html>
+                <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+                <style>
+                </style>
+                <body>
+                    <div align='center'>
+                        <a>
+                            <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
+                            <br/>
+                        </a>
+                    </div>
+                    <h1 style="text-align: center;">
+                        Καλώς ήρθατε στην μελέτη <b>ΕΙΠΕς</b>
+                    </h1>
+                </body>
+            </html>
+
+            Αγαπητές και αγαπητοί συνάδελφοι, η μελέτη γίνεται να καταλάβουμε καλύτερα και
+            να καταδείξουμε τι πιστεύουν οι ειδικευόμενες/οι & οι φοιτήτριες/ές Ιατρικής
+            για την κατάστασή τους
+            αλλά και για τις αλλαγές που δρομολογεί για την ειδικότητα η ηγεσία του Υπουργείου Υγείας.
+
+            <html>
+                <body>
+                    <h2 style="text-align: center;">
+                        Πατήστε στον <a href="{link}">σύνδεσμο</a> για να συμμετέχετε στην έρευνα.
+                    </h2>
+                </body>
+            </html>
+
+            Χρόνος συμπλήρωσης: 5 λεπτά. Παρακαλούμε απαντήστε σε όλες τις ερωτήσεις όσο καλύτερα μπορείτε.
+            """
+            content = random.choice([content, content2, content3])
             # Use this for html
             message.add_header("Content-Type", "text/html")
             message.set_payload(content)
@@ -167,15 +249,16 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
             # In order for this function to work, I have modified the line 409 in the generator.py of email library
             # I have replaced ascii with utf-8
             # The modified line: self._fp.write(s.encode('utf-8', 'surrogateescape'))
-            # I didn't find another way to send an html with greek letters
+            # I didn't find another way to send a html with greek letters
             send_message = (
                 service.users().messages().send(userId="me", body=create_message).execute()
             )
 
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
-            logger.info("Message sent successfully")
-
+            random_time = random.randrange(start=60, stop=120, step=1)
+            logger.info(f"Message sent successfully. Sleeping for {random_time=}")
+            time.sleep(random_time)
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
@@ -191,6 +274,7 @@ def compare_emails() -> pd.DataFrame:
     answers_file = pd.read_excel(
         io="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx"
     )
+    answers_file["emails"] = answers_file["Διεύθυνση ηλεκτρονικού ταχυδρομείου "]
     excel_file["emails_bool"] = excel_file["emails"].isin(answers_file["emails"])
     # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
 
@@ -225,7 +309,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
                 </style>
                 <body>
                     <div align='center'>
-                        <a href="{link}">
+                        <a>
                             <img src="https://i.ibb.co/qskr3ZR/eipes-header.png" alt="logo header" style="width:500px;">
                             <br/>
                         </a>
@@ -267,8 +351,9 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
 
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
-            logger.info("Message sent successfully")
-
+            random_time = random.randrange(start=60, stop=120, step=1)
+            logger.info(f"Message sent successfully. Sleeping for {random_time=}")
+            time.sleep(random_time)
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
