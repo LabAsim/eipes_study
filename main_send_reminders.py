@@ -2,7 +2,13 @@ import logging
 
 import colorama
 
-from core import authenticate, iterate_pandas_rows, send_reminders, compare_emails
+from core import (
+    authenticate,
+    iterate_pandas_rows,
+    send_reminders,
+    compare_emails,
+    compare_save_emails_locally,
+)
 from helper import color_logging
 from constants import SUBJECT_REMINDER_EMAIL
 
@@ -27,6 +33,9 @@ def main():
     # You may see this message if you email a total of more than 500 recipients in a single email
     # and or more than 500 emails sent in a day.
     excel_file_emails = compare_emails()
+    excel_file_emails = compare_save_emails_locally(
+        df=excel_file_emails, excel_name="emails_sent_reminder.xlsx"
+    )
     it = iterate_pandas_rows(df=excel_file_emails)
     send_reminders(creds=creds, it=it, subject=SUBJECT_REMINDER_EMAIL)
 

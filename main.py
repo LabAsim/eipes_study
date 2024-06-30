@@ -39,7 +39,9 @@ def main():
         return
     excel_file_emails = parse_excel_file()
     excel_file_emails = drop_email_duplicates(df=excel_file_emails)
-    excel_file_emails = compare_save_emails_locally(df=excel_file_emails)
+    excel_file_emails = compare_save_emails_locally(
+        df=excel_file_emails, excel_name="emails_sent.xlsx"
+    )
     it = iterate_pandas_rows(df=excel_file_emails)
     send_emails(creds=creds, it=it, subject=SUBJECT_FIRST_EMAIL)
 
