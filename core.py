@@ -49,7 +49,7 @@ def drop_email_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(subset=["emails"])
 
 
-def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
+def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFrame:
     """Checks if there is a file with the emails that we had sent the survey to.
     If there is not, it writes one to disk.
     If there is, it compares `emails.xlsx` values to `emails_sent.xlsx`.
@@ -58,9 +58,9 @@ def compare_save_emails_locally(df: pd.DataFrame) -> pd.DataFrame:
     :return A dataframe contains the emails and their corresponding links
     """
 
-    emails_sent_excel_path = os.path.join(os.path.dirname(__file__), "emails_sent.xlsx")
+    emails_sent_excel_path = os.path.join(os.path.dirname(__file__), excel_name)
 
-    if file_exists(dir_path=os.path.dirname(__file__), name="emails_sent.xlsx"):
+    if file_exists(dir_path=os.path.dirname(__file__), name=excel_name):
         emails_sent = pd.read_excel(io=emails_sent_excel_path)
 
         df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
@@ -342,9 +342,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             # Use this for html
             message.add_header("Content-Type", "text/html")
             message.set_payload(content)
-            message["Bcc"] = (
-                _email  # Do not use "To", this will reveal the emails to every recipient
-            )
+            message["Το"] = _email
             message["From"] = GMAIL_USERNAME
             message["Subject"] = subject
             encoded_message = base64.urlsafe_b64encode(
