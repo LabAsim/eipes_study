@@ -15,7 +15,7 @@ import pandas as pd
 
 from helper import file_exists
 from saved_tokens import GMAIL_USERNAME
-from constants import SCOPES
+from constants import SCOPES, CONTENT_THANKING
 
 logger = logging.getLogger(__name__)
 
@@ -61,21 +61,30 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
     emails_sent_excel_path = os.path.join(os.path.dirname(__file__), excel_name)
 
     if file_exists(dir_path=os.path.dirname(__file__), name=excel_name):
-        emails_sent = pd.read_excel(io=emails_sent_excel_path)
+        emails_sent = pd.read_excel(io=emails_sent_excel_path, engine="openpyxl")
 
         df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
 
         # Re-write the emails_sent file with the old + new emails
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
-        df_to_return = pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails", "links"]])  # noqa
-        logger.debug(f"{df_to_return.shape=}")
+        if "links" in df.columns:
+            df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails", "links"]])
 
+        else:
+            df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails"]])
+
+        logger.debug(f"{df_to_return.shape=}")
         return df_to_return
+
     else:
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
-        return pd.DataFrame(df[["emails", "links"]])
+        return (
+            pd.DataFrame(df[["emails", "links"]])
+            if "links" in df.columns
+            else pd.DataFrame(df[["emails"]])
+        )
 
 
 def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
@@ -87,7 +96,10 @@ def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
     for row in df.itertuples():
         row: NamedTuple[tuple[Any, ...]] = row
 
-        yield row.emails, row.links
+        if "links" not in row:
+            yield row.emails, None
+        else:
+            yield row.emails, row.links
 
 
 def authenticate() -> Credentials:
@@ -265,7 +277,7 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
 
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
-            random_time = random.randrange(start=60, stop=120, step=1)
+            random_time = random.randrange(start=60, stop=90, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
         except (HttpError, Exception) as err:
@@ -290,6 +302,21 @@ def compare_emails() -> pd.DataFrame:
     return pd.DataFrame(  # noqa
         excel_file.loc[excel_file["emails_bool"] == False, ["emails", "links"]]  # noqa
     )  # noqa
+
+
+def extract_answered_emails() -> pd.DataFrame:
+    """Extracts the emails from the answers"""
+
+    answers_file = pd.read_excel(
+        io="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx"
+    )
+    answers_file["emails"] = answers_file["Διεύθυνση ηλεκτρονικού ταχυδρομείου "]
+    # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
+
+    # This is redundant. It's only added for code compatibility.
+    # answers_file["links"] = None
+
+    return pd.DataFrame(answers_file["emails"])
 
 
 def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
@@ -362,6 +389,52 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
             random_time = random.randrange(start=60, stop=120, step=1)
+            logger.info(f"Message sent successfully. Sleeping for {random_time=}")
+            time.sleep(random_time)
+        except (HttpError, Exception) as err:
+            logger_email.error(f"{_email=}")
+            logger.exception(f"{err=}")
+
+
+def send_thanks(creds: Credentials, it: Iterator, subject: str) -> None:
+    """
+    Sends the thank-you emails.
+    """
+
+    # create gmail api client
+    service = build("gmail", "v1", credentials=creds)
+    counter = 1
+    for _email, link in it:
+        try:
+            message = EmailMessage()  # policy=policy.EmailPolicy(cte_type="8bit", utf8=True)
+            logger.debug(f"{_email=}")
+            logger.debug(f"{link=}")
+            logger.debug(f"{counter=}")
+            counter += 1
+            # message.set_content(content)
+            # https://stackoverflow.com/a/16906974
+
+            message.set_payload(CONTENT_THANKING)
+            message["Bcc"] = _email
+            message["From"] = "eipes.study@gmail.com"
+            message["Subject"] = subject
+            encoded_message = base64.urlsafe_b64encode(
+                message.as_bytes()  # policy=policy.EmailPolicy(cte_type="8bit", utf8=True)
+            ).decode()
+
+            create_message = {"raw": encoded_message}
+            # pylint: disable=E1101
+            # In order for this function to work, I have modified the line 409 in the generator.py of email library
+            # I have replaced ascii with utf-8
+            # The modified line: self._fp.write(s.encode('utf-8', 'surrogateescape'))
+            # I didn't find another way to send an html with greek letters
+            send_message = (
+                service.users().messages().send(userId="me", body=create_message).execute()
+            )
+
+            logger.debug(f'Message Id: {send_message["id"]}')
+            logger.debug(f"{send_message=}")
+            random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
         except (HttpError, Exception) as err:
