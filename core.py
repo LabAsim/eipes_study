@@ -69,10 +69,12 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
 
         if "links" in df.columns:
-            df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails", "links"]])
+            df_to_return = pd.DataFrame(  # noqa
+                df.loc[df["emails_bool"] == False, ["emails", "links"]]  # noqa
+            )  # noqa
 
         else:
-            df_to_return = pd.DataFrame(df.loc[df["emails_bool"] is False, ["emails"]])
+            df_to_return = pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails"]])  # noqa
 
         logger.debug(f"{df_to_return.shape=}")
         return df_to_return
