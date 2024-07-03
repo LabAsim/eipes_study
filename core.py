@@ -98,10 +98,19 @@ def iterate_pandas_rows(df: pd.DataFrame) -> Iterator:
     for row in df.itertuples():
         row: NamedTuple[tuple[Any, ...]] = row
 
-        if "links" not in row:
-            yield row.emails, None
-        else:
-            yield row.emails, row.links
+        yield row.emails, row.links
+
+
+def iterate_pandas_single_column(df: pd.DataFrame) -> Iterator:
+    """
+    itertuples() returns a NamedTuple
+    See: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.itertuples.html#pandas.DataFrame.itertuples  # noqa: E501
+    """
+
+    for row in df.itertuples():
+        row: NamedTuple[tuple[Any, ...]] = row
+
+        yield row.emails, None
 
 
 def authenticate() -> Credentials:

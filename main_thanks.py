@@ -4,11 +4,11 @@ import colorama
 
 from core import (
     authenticate,
-    iterate_pandas_rows,
     drop_email_duplicates,
     compare_save_emails_locally,
     extract_answered_emails,
     send_thanks,
+    iterate_pandas_single_column,
 )
 from helper import color_logging
 from constants import SUBJECT_FIRST_EMAIL
@@ -44,7 +44,7 @@ def main():
     excel_file_emails = compare_save_emails_locally(
         df=excel_file_emails, excel_name="emails_thanks.xlsx"
     ).dropna()
-    it = iterate_pandas_rows(df=excel_file_emails)
+    it = iterate_pandas_single_column(df=excel_file_emails)
     send_thanks(creds=creds, it=it, subject=SUBJECT_FIRST_EMAIL)
 
 
