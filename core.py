@@ -288,7 +288,7 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
 
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
-            random_time = random.randrange(start=60, stop=90, step=1)
+            random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
         except (HttpError, Exception) as err:
