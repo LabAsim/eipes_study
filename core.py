@@ -380,7 +380,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             # Use this for html
             message.add_header("Content-Type", "text/html")
             message.set_payload(content)
-            message["Το"] = _email
+            message["Bcc"] = _email
             message["From"] = GMAIL_USERNAME
             message["Subject"] = subject
             encoded_message = base64.urlsafe_b64encode(
@@ -399,7 +399,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
 
             logger.debug(f'Message Id: {send_message["id"]}')
             logger.debug(f"{send_message=}")
-            random_time = random.randrange(start=60, stop=120, step=1)
+            random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
         except (HttpError, Exception) as err:
