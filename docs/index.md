@@ -6,15 +6,15 @@
 </a>
 
 <div align='left'>
-<p style="font-size:40px;">
-  <strong>
-    Πάρε μέρος στην έρευνα:
-    </br>
-    γράψε μας στο eipes.study@gmail.com
-    </br>
-    και θα σου στείλουμε το ερωτηματολόγιο!
-  </strong>
-</p>
+  <p style="font-size:40px;">
+    <strong>
+      Πάρε μέρος στην έρευνα:
+      </br>
+      γράψε μας στο eipes.study@gmail.com
+      </br>
+      και θα σου στείλουμε το ερωτηματολόγιο!
+    </strong>
+  </p>
 </div>
 
 
