@@ -9,6 +9,8 @@ This repo contains the scripts to automate the whole process of sending personal
 
 You can find the flyer of the study [here](https://github.com/LabAsim/eipes_study/blob/master/media/eipes.png?raw=true).
 
+The site of the study is hosted on GitHub pages. Click [here](https://labasim.github.io/eipes_study/) to visit it!
+
 ## Table of Contents
 
 * [Requirements](#Requirements)
