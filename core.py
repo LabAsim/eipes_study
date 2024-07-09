@@ -366,9 +366,6 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
                     <h2 style="text-align: center;">
                         Πατήστε στον <a href="{link}">σύνδεσμο</a> που ακολουθεί για να συμμετέχετε στην έρευνα.
                     </h2>
-                    <h3 style="text-align: center;">
-                        {link}
-                    </h3>
                 </body>
             </html>
             """
