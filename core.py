@@ -1,21 +1,25 @@
+from __future__ import print_function
+import base64
+import io
 import logging
 import os.path
-import base64
+import pickle
 import random
+import shutil
 import time
 from email.message import EmailMessage
+from mimetypes import MimeTypes
 from typing import Iterator, NamedTuple, Any
-
-from googleapiclient.discovery import build
+import pandas as pd
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-import pandas as pd
-
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
+from constants import SCOPES, CONTENT_THANKING
 from helper import file_exists
 from saved_tokens import GMAIL_USERNAME
-from constants import SCOPES, CONTENT_THANKING
 
 logger = logging.getLogger(__name__)
 
@@ -443,3 +447,133 @@ def send_thanks(creds: Credentials, it: Iterator, subject: str) -> None:
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
+
+
+class DriveAPI:
+    """
+
+    The class is modified.
+    The source code taken from here:
+    https://www.geeksforgeeks.org/upload-and-download-files-from-google-drive-storage-using-python/
+    """
+
+    # Define the scopes
+    SCOPES = ["https://www.googleapis.com/auth/drive"]
+
+    def __init__(self):
+
+        # Variable self.creds will
+        # store the user access token.
+        # If no valid token found
+        # we will create one.
+        self.creds = None
+
+        # The file token.pickle stores the
+        # user's access and refresh tokens. It is
+        # created automatically when the authorization
+        # flow completes for the first time.
+
+        # Check if file token.pickle exists
+        if os.path.exists("token.pickle"):
+            # Read the token from the file and
+            # store it in the variable self.creds
+            with open("token.pickle", "rb") as token:
+                self.creds = pickle.load(token)
+
+            # If no valid credentials are available,
+        # request the user to log in.
+        if not self.creds or not self.creds.valid:
+
+            # If token is expired, it will be refreshed,
+            # else, we will request a new one.
+            if self.creds and self.creds.expired and self.creds.refresh_token:
+                self.creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", DriveAPI.SCOPES
+                )
+                self.creds = flow.run_local_server(port=0)
+
+            # Save the access token in token.pickle
+            # file for future usage
+            with open("token.pickle", "wb") as token:
+                pickle.dump(self.creds, token)
+
+            # Connect to the API service
+        self.service = build("drive", "v3", credentials=self.creds)
+
+        # request a list of first N files or
+        # folders with name and id from the API.
+        results = self.service.files().list(pageSize=100, fields="files(id, name)").execute()
+        items = results.get("files", [])
+
+        # print a list of files
+
+        logger.debug("Here's a list of files: \n")
+        for item in items:  # , sep="\n", end="\n\n"
+            logger.debug(msg=item)
+        else:
+            print()
+
+    def download_file(self, file_id, file_name):
+        """Downloads the selected file based on `file_id` and saves it as `file_name`"""
+
+        # See here for mimeType: https://developers.google.com/drive/api/guides/ref-export-formats
+        # It needs export_media with a certain mimeType, not get_media (this is only for binary content)
+        # See example: https://developers.google.com/drive/api/guides/manage-downloads#export-content
+        request = self.service.files().export_media(
+            fileId=file_id,
+            mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        fh = io.BytesIO()
+
+        # Initialise a downloader object to download the file
+        downloader = MediaIoBaseDownload(fh, request, chunksize=204800)
+        done = False
+
+        while done is False:
+            status, done = downloader.next_chunk()
+            logger.debug("Download %d%%." % int(status.progress() * 100))
+        try:
+            # Download the data in chunks
+            while not done:
+                status, done = downloader.next_chunk()
+
+            fh.seek(0)
+
+            # Write the received data to the file
+            with open(file_name, "wb") as f:
+                shutil.copyfileobj(fh, f)
+
+            logger.info("File Downloaded")
+            # Return True if file Downloaded successfully
+            return True
+        except Exception as err:
+            logger.exception(f"{err=}")
+            # Return False if something went wrong
+            logger.exception("Something went wrong.")
+            return False
+
+    def FileUpload(self, filepath):
+
+        # Extract the file name out of the file path
+        name = filepath.split("/")[-1]
+
+        # Find the MimeType of the file
+        mimetype = MimeTypes().guess_type(name)[0]
+
+        # create file metadata
+        file_metadata = {"name": name}
+
+        try:
+            media = MediaFileUpload(filepath, mimetype=mimetype)
+
+            # Create a new file in the Drive storage
+            self.service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+
+            print("File Uploaded.")
+
+        except Exception as err:
+            logger.exception(f"{err=}")
+            # Raise UploadError if file is not uploaded.
+            raise Exception("Can't Upload File.")
