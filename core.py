@@ -41,6 +41,8 @@ def parse_excel_file() -> pd.DataFrame:
     """
 
     excel_file = pd.read_excel(io="emails.xlsx")
+    # Remove leading/trailing whitespaces
+    excel_file["emails"] = excel_file["emails"].str.strip()
     # Create the personalized links
     non_prefilled_link = "https://docs.google.com/forms/d/e/1FAIpQLSdOuMQzg9iKtNZK4X-vzXkwttezx6Y9g5UhL5BLISYZ7cNLdA/viewform?usp=pp_url&entry.1713466637="  # noqa: E501 # ends withmail@mail.com
     excel_file["links"] = non_prefilled_link + excel_file["emails"]
@@ -66,6 +68,8 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
 
     if file_exists(dir_path=os.path.dirname(__file__), name=excel_name):
         emails_sent = pd.read_excel(io=emails_sent_excel_path, engine="openpyxl")
+        # Remove leading/trailing whitespaces
+        emails_sent["emails"] = emails_sent["emails"].str.strip()
 
         df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
 
@@ -84,6 +88,7 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
         return df_to_return
 
     else:
+        df["emails"] = df["emails"].str.strip()
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
         logger.debug(f"{df.shape=}")
 
@@ -312,6 +317,7 @@ def compare_emails() -> pd.DataFrame:
         io="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx"
     )
     answers_file["emails"] = answers_file["Διεύθυνση ηλεκτρονικού ταχυδρομείου "]
+    answers_file["emails"] = answers_file["emails"].str.strip()
     excel_file["emails_bool"] = excel_file["emails"].isin(answers_file["emails"])
     # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
 
