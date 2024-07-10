@@ -9,9 +9,11 @@ from core import (
     iterate_pandas_rows,
     drop_email_duplicates,
     compare_save_emails_locally,
+    DriveAPI,
 )
 from helper import color_logging
 from constants import SUBJECT_FIRST_EMAIL
+from saved_tokens import EMAILS_XLSX_ID
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +39,10 @@ def main():
     if _input not in ("yes", "Yes", "1", "y", "Y"):
         logger.error("Double check the emails!")
         return
+
+    obj = DriveAPI()
+    obj.download_file(file_id=EMAILS_XLSX_ID, file_name="emails.xlsx")
+
     excel_file_emails = parse_excel_file()
     excel_file_emails = drop_email_duplicates(df=excel_file_emails)
     excel_file_emails = compare_save_emails_locally(
