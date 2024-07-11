@@ -70,12 +70,17 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
         emails_sent = pd.read_excel(io=emails_sent_excel_path, engine="openpyxl")
         # Remove leading/trailing whitespaces
         emails_sent["emails"] = emails_sent["emails"].str.strip()
+        df["emails"] = df["emails"].str.strip()
 
         df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
 
+        df = pd.concat(objs=[emails_sent, df]).drop_duplicates(subset=["emails"])
+        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.drop_duplicates.html
+        df.drop_duplicates(inplace=True)
+
         # Re-write the emails_sent file with the old + new emails
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
-
+        logger.debug(f"Saving to '{emails_sent_excel_path}'")
         if "links" in df.columns:
             df_to_return = pd.DataFrame(  # noqa
                 df.loc[df["emails_bool"] == False, ["emails", "links"]]  # noqa
@@ -85,6 +90,7 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
             df_to_return = pd.DataFrame(df.loc[df["emails_bool"] == False, ["emails"]])  # noqa
 
         logger.debug(f"{df_to_return.shape=}")
+        logger.debug(f"{df_to_return.to_string()}")
         return df_to_return
 
     else:
