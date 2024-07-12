@@ -525,7 +525,7 @@ class DriveAPI:
         for item in items:  # , sep="\n", end="\n\n"
             logger.debug(msg=item)
         else:
-            print()
+            logger.debug(msg="---------------")
 
     def download_file(self, file_id, file_name):
         """Downloads the selected file based on `file_id` and saves it as `file_name`"""
