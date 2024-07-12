@@ -9,9 +9,11 @@ from core import (
     extract_answered_emails,
     send_thanks,
     iterate_pandas_single_column,
+    DriveAPI,
 )
 from helper import color_logging
 from constants import SUBJECT_FIRST_EMAIL
+from saved_tokens import EMAILS_XLSX_ID, ANWSERS_XLSX_ID
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,13 @@ def main():
     )
     colorama.init(convert=True)
     creds = authenticate()
+
+    obj = DriveAPI()
+    obj.download_file(file_id=EMAILS_XLSX_ID, file_name="emails.xlsx")
+    obj.download_file(
+        file_id=ANWSERS_XLSX_ID,
+        file_name="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx",
+    )
     # https://support.google.com/mail/answer/22839?hl=en#zippy=%2Cyou-have-reached-a-limit-for-sending-mail
     # You may see this message if you email a total of more than 500 recipients in a single email
     # and or more than 500 emails sent in a day.
