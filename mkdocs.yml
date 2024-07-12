@@ -1,5 +1,5 @@
 site_name: Μελέτη ΕΙΠΕς (EIPEs Study)
-# site_url: https://james-willett.github.io/mkdocs-material-youtube-tutorial/
+site_url: https://github.com/LabAsim/eipes_study
 theme:
   name: material
   features:
@@ -12,6 +12,9 @@ theme:
     - content.tabs.link
     - content.code.annotation
     - content.code.copy
+    - search.share
+    - search.suggest
+    - search.highlight
   language: en
   palette:
     - scheme: slate
