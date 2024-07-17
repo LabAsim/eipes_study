@@ -6,6 +6,7 @@ import os.path
 import pickle
 import random
 import shutil
+import ssl
 import time
 from email.message import EmailMessage
 from mimetypes import MimeTypes
@@ -412,6 +413,9 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             time.sleep(random_time)
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
+            logger.exception(f"{err=}")
+        except ssl.SSLEOFError as err:
+            logger_email.error(f"# SSLEOFError \n{_email=}\n")
             logger.exception(f"{err=}")
 
 

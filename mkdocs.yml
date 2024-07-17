@@ -67,7 +67,7 @@ extra:
           data: 0
           note: >-
             Thanks for your feedback! Help us improve this page by
-            using our feedback form.
+            using our <a href="https://forms.gle/dDBRLbqNQ9ZekUra7" target="_blank">feedback form</a>.
 
 extra_javascript:
   - javascripts/feedback.js
