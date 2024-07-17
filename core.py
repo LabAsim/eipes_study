@@ -411,11 +411,14 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
-        except (HttpError, Exception) as err:
+        except HttpError as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
         except ssl.SSLEOFError as err:
             logger_email.error(f"# SSLEOFError \n{_email=}\n")
+            logger.exception(f"{err=}")
+        except Exception as err:
+            logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
 
 
