@@ -418,6 +418,7 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             logger_email.error(f"# SSLEOFError \n{_email=}\n")
             logger.exception(f"{err=}")
         except Exception as err:
+            logger.error("Exception")
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
 
@@ -479,14 +480,14 @@ class DriveAPI:
     # Define the scopes
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-    def __init__(self):
+    def __init__(self, calling_from: str = "python"):
 
         # Variable self.creds will
         # store the user access token.
         # If no valid token found
         # we will create one.
         self.creds = None
-
+        self.calling_from = calling_from
         # The file token.pickle stores the
         # user's access and refresh tokens. It is
         # created automatically when the authorization
@@ -505,8 +506,17 @@ class DriveAPI:
 
             # If token is expired, it will be refreshed,
             # else, we will request a new one.
-            if self.creds and self.creds.expired and self.creds.refresh_token:
-                self.creds.refresh(Request())
+            if (
+                self.creds
+                and self.creds.expired
+                and self.creds.refresh_token
+                and self.calling_from == "python"
+            ):
+                # self.creds.refresh(Request())
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    "credentials.json", DriveAPI.SCOPES
+                )
+                self.creds = flow.run_local_server(port=0)
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     "credentials.json", DriveAPI.SCOPES
