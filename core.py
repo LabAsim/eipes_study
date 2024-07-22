@@ -512,11 +512,7 @@ class DriveAPI:
                 and self.creds.refresh_token
                 and self.calling_from == "python"
             ):
-                # self.creds.refresh(Request())
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", DriveAPI.SCOPES
-                )
-                self.creds = flow.run_local_server(port=0)
+                self.creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
                     "credentials.json", DriveAPI.SCOPES
