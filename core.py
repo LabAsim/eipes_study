@@ -1,5 +1,7 @@
 from __future__ import print_function
 import base64
+import datetime
+import inspect
 import io
 import logging
 import os.path
@@ -308,6 +310,12 @@ def send_emails(creds: Credentials, it: Iterator, subject: str) -> None:
             random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
+        except ssl.SSLEOFError as err:
+            logger_email.error(
+                f"# {inspect.getframeinfo(inspect.currentframe())[2]} SSLEOFError "
+                f"({datetime.datetime.now()}) \n{_email=}\n"
+            )
+            logger.exception(f"{err=}")
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
@@ -415,7 +423,10 @@ def send_reminders(creds: Credentials, it: Iterator, subject: str) -> None:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
         except ssl.SSLEOFError as err:
-            logger_email.error(f"# SSLEOFError \n{_email=}\n")
+            logger_email.error(
+                f"# {inspect.getframeinfo(inspect.currentframe())[2]} SSLEOFError "
+                f"({datetime.datetime.now()}) \n{_email=}\n"
+            )
             logger.exception(f"{err=}")
         except Exception as err:
             logger.error("Exception")
@@ -464,6 +475,12 @@ def send_thanks(creds: Credentials, it: Iterator, subject: str) -> None:
             random_time = random.randrange(start=60, stop=70, step=1)
             logger.info(f"Message sent successfully. Sleeping for {random_time=}")
             time.sleep(random_time)
+        except ssl.SSLEOFError as err:
+            logger_email.error(
+                f"# {inspect.getframeinfo(inspect.currentframe())[2]} SSLEOFError "
+                f"({datetime.datetime.now()}) \n{_email=}\n"
+            )
+            logger.exception(f"{err=}")
         except (HttpError, Exception) as err:
             logger_email.error(f"{_email=}")
             logger.exception(f"{err=}")
