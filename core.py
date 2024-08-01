@@ -45,7 +45,7 @@ def parse_excel_file() -> pd.DataFrame:
 
     excel_file = pd.read_excel(io="emails.xlsx")
     # Remove leading/trailing whitespaces
-    excel_file["emails"] = excel_file["emails"].str.strip()
+    excel_file["emails"] = excel_file["emails"].str.strip().str.lower()
     # Create the personalized links
     non_prefilled_link = "https://docs.google.com/forms/d/e/1FAIpQLSdOuMQzg9iKtNZK4X-vzXkwttezx6Y9g5UhL5BLISYZ7cNLdA/viewform?usp=pp_url&entry.1713466637="  # noqa: E501 # ends withmail@mail.com
     excel_file["links"] = non_prefilled_link + excel_file["emails"]
@@ -55,6 +55,7 @@ def parse_excel_file() -> pd.DataFrame:
 
 def drop_email_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     """Drops the duplicates from emails column and returns the df"""
+    df["emails"] = df["emails"].str.lower().str.strip()
     return df.drop_duplicates(subset=["emails"])
 
 
@@ -72,12 +73,13 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
     if file_exists(dir_path=os.path.dirname(__file__), name=excel_name):
         emails_sent = pd.read_excel(io=emails_sent_excel_path, engine="openpyxl")
         # Remove leading/trailing whitespaces
-        emails_sent["emails"] = emails_sent["emails"].str.strip()
-        df["emails"] = df["emails"].str.strip()
+        emails_sent["emails"] = emails_sent["emails"].str.lower().str.strip()
+        df["emails"] = df["emails"].str.lower().str.strip()
 
         df["emails_bool"] = df["emails"].isin(emails_sent["emails"])
 
         df = pd.concat(objs=[emails_sent, df]).drop_duplicates(subset=["emails"])
+        df = drop_email_duplicates(df=df)
         # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.drop_duplicates.html
         df.drop_duplicates(inplace=True)
 
@@ -97,9 +99,10 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
         return df_to_return
 
     else:
-        df["emails"] = df["emails"].str.strip()
+        df["emails"] = df["emails"].str.strip().str.lower()
         df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
         logger.debug(f"{df.shape=}")
+        logger.debug(f"{df.to_string()}")
 
         return (
             pd.DataFrame(df[["emails", "links"]])
@@ -332,7 +335,9 @@ def compare_emails() -> pd.DataFrame:
         io="ΕΡΕΥΝΑ ΓΙΑ ΤΗΝ ΙΑΤΡΙΚΗ ΠΑΙΔΕΙΑ ΚΑΙ ΕΡΓΑΣΙΑ (ΕΙΠΕς) (Απαντήσεις).xlsx"
     )
     answers_file["emails"] = answers_file["Διεύθυνση ηλεκτρονικού ταχυδρομείου "]
-    answers_file["emails"] = answers_file["emails"].str.strip()
+    answers_file["emails"] = answers_file["emails"].str.strip().str.lower()
+    excel_file["emails"] = excel_file["emails"].str.strip().str.lower()
+    excel_file = drop_email_duplicates(df=excel_file)
     excel_file["emails_bool"] = excel_file["emails"].isin(answers_file["emails"])
     # See: https://sparkbyexamples.com/pandas/pandas-extract-column-value-based-on-another-column/#:~:text=Using%20DataFrame.,-Values()&text=value()%20property%2C%20you%20can,end%20to%20access%20the%20value.  # noqa: E501
 
@@ -509,7 +514,7 @@ class DriveAPI:
         # user's access and refresh tokens. It is
         # created automatically when the authorization
         # flow completes for the first time.
-
+        logger.debug(f"{os.path.dirname(__file__)=}")
         # Check if file token.pickle exists
         if os.path.exists("token.pickle"):
             # Read the token from the file and
