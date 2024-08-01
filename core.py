@@ -59,7 +59,9 @@ def drop_email_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(subset=["emails"])
 
 
-def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFrame:
+def compare_save_emails_locally(
+    df: pd.DataFrame, excel_name: str, test: bool = False
+) -> pd.DataFrame:
     """Checks if there is a file with the emails that we had sent the survey to.
     If there is not, it writes one to disk.
     If there is, it compares `emails.xlsx` values to `emails_sent.xlsx`.
@@ -84,7 +86,8 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
         df.drop_duplicates(inplace=True)
 
         # Re-write the emails_sent file with the old + new emails
-        df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
+        if not test:
+            df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
         logger.debug(f"Saving to '{emails_sent_excel_path}'")
         if "links" in df.columns:
             df_to_return = pd.DataFrame(  # noqa
@@ -100,7 +103,8 @@ def compare_save_emails_locally(df: pd.DataFrame, excel_name: str) -> pd.DataFra
 
     else:
         df["emails"] = df["emails"].str.strip().str.lower()
-        df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
+        if not test:
+            df.to_excel(excel_writer=emails_sent_excel_path, columns=["emails"], index=False)
         logger.debug(f"{df.shape=}")
         logger.debug(f"{df.to_string()}")
 
