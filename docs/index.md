@@ -5,18 +5,18 @@
     <br/>
 </a>
 
-<div align='left'>
-  <p style="font-size:40px;">
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="https://i.ibb.co/vZpQyzg/qr.png" alt="Your Image" style="width:250px;">
+  <p style="font-size:36px;">
     <strong>
-      Πάρε μέρος στην έρευνα:
       </br>
-      γράψε μας στο eipes.study@gmail.com
-      </br>
-      και θα σου στείλουμε το ερωτηματολόγιο!
+      Σκάναρε & συμπλήρωσε το ερωτηματολόγιο!
     </strong>
   </p>
 </div>
 
+---
 
 Η μελέτη ΕΙΠΕς διεξάγεται από το Αιγινητείο νοσοκομείο. Η ερευνητική ομάδα αποτελείεται από:
 
