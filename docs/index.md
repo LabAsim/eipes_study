@@ -102,7 +102,7 @@
 
 <p style="font-size:34px;">
   <strong>
-    Πάρε μέρος στην έρευνα, γράψε μας στο eipes.study@gmail.com!
+    Πάρε μέρος στην έρευνα, γράψε μας στο eipes.study(at)gmail.com!
   </strong>
 </p>
 
