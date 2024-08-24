@@ -13,7 +13,7 @@
       </br>
       Σκάναρε & συμπλήρωσε το ερωτηματολόγιο!
       </br>
-      Ή πατήστε <a href="https://forms.gle/VDb2zbvHrPN71DbF7">εδώ</a> !
+      Ή πάτησε <a href="https://forms.gle/VDb2zbvHrPN71DbF7">εδώ</a> !
     </strong>
   </p>
 </div>
